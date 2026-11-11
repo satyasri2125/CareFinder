@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block page %}home{% endblock %}
+
+{% block content %}
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="fade-in">
+      <span class="eyebrow"><span class="dot"></span> Emergency hospital discovery</span>
+      <h1>Find the Right <span>Nearby Hospital</span> Faster</h1>
+      <p class="sub">Smart hospital discovery when every minute matters.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="btnUseLocation">📍 Use Current Location</button>
+        <button class="btn btn-outline" id="btnSearchArea">🔎 Search by Area</button>
+      </div>
+      <div class="hero-stats">
+        <div><strong>Any</strong><span>City or area</span></div>
+        <div><strong>7</strong><span>Accident types</span></div>
+        <div><strong>5</strong><span>Ranking factors</span></div>
+      </div>
+    </div>
+
+    <!-- Emergency illustration (inline SVG, no image file needed) -->
+    <div class="hero-art fade-in">
+      <div class="float-card one">🚑 Ambulance available</div>
+      <div class="float-card two">⭐ 4.6 · 📍 3.8 km</div>
+      <svg viewBox="0 0 560 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hospital and ambulance illustration">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6d4aff"/><stop offset="1" stop-color="#3b82f6"/></linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ece6ff"/></linearGradient>
+        </defs>
+        <rect x="10" y="20" width="540" height="420" rx="36" fill="url(#g1)" opacity=".10"/>
+        <circle cx="440" cy="110" r="70" fill="#6d4aff" opacity=".12"/>
+        <circle cx="110" cy="360" r="60" fill="#3b82f6" opacity=".14"/>
+        <!-- hospital -->
+        <rect x="150" y="110" width="260" height="230" rx="18" fill="url(#g2)" stroke="#d9d0ff" stroke-width="3"/>
+        <rect x="150" y="110" width="260" height="46" rx="18" fill="url(#g1)"/>
+        <rect x="255" y="170" width="50" height="50" rx="10" fill="#e11d48"/>
+        <rect x="274" y="180" width="12" height="30" rx="3" fill="#fff"/><rect x="265" y="189" width="30" height="12" rx="3" fill="#fff"/>
+        <g fill="#cfc4ff">
+          <rect x="175" y="180" width="50" height="38" rx="8"/><rect x="335" y="180" width="50" height="38" rx="8"/>
+          <rect x="175" y="238" width="50" height="38" rx="8"/><rect x="335" y="238" width="50" height="38" rx="8"/>
+        </g>
+        <rect x="258" y="270" width="44" height="70" rx="8" fill="#6d4aff"/>
+        <text x="280" y="140" text-anchor="middle" font-family="Inter,Arial" font-weight="800" font-size="20" fill="#fff">HOSPITAL</text>
+        <!-- road -->
+        <rect x="30" y="340" width="500" height="34" rx="17" fill="#3a3560"/>
+        <g stroke="#fff" stroke-width="4" stroke-dasharray="22 18" opacity=".7"><line x1="50" y1="357" x2="510" y2="357"/></g>
+        <!-- ambulance -->
+        <g transform="translate(60 282)">
+          <rect x="0" y="12" width="124" height="62" rx="12" fill="#fff" stroke="#d9d0ff" stroke-width="3"/>
+          <path d="M124 30h30l22 22v22h-52z" fill="#fff" stroke="#d9d0ff" stroke-width="3"/>
+          <rect x="136" y="38" width="26" height="16" rx="4" fill="#bcd6ff"/>
+          <rect x="44" y="26" width="14" height="38" rx="3" fill="#e11d48"/><rect x="32" y="38" width="38" height="14" rx="3" fill="#e11d48"/>
+          <rect x="68" y="0" width="22" height="14" rx="5" fill="#e11d48"/>
+          <circle cx="36" cy="78" r="15" fill="#1f1b3a"/><circle cx="36" cy="78" r="6" fill="#ddd"/>
+          <circle cx="146" cy="78" r="15" fill="#1f1b3a"/><circle cx="146" cy="78" r="6" fill="#ddd"/>
+        </g>
+        <!-- heartbeat -->
+        <polyline points="40,78 120,78 140,48 164,108 188,60 206,78 300,78" fill="none" stroke="#e11d48" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- location pin -->
+        <g transform="translate(430 190)">
+          <path d="M30 0c-18 0-32 14-32 32 0 24 32 56 32 56s32-32 32-56C62 14 48 0 30 0z" fill="#e11d48"/>
+          <circle cx="30" cy="32" r="12" fill="#fff"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SEARCH CARD ================= -->
+<div class="container">
+  <section class="search-card" id="searchCard">
+    <h2>Find hospitals near you</h2>
+    <p class="muted">Enter your location and the type of emergency. We rank nearby hospitals for you.</p>
+    <form class="search-form" id="searchForm" action="{{ url_for('search') }}" method="get">
+      <div class="field">
+        <label for="locationInput">Location</label>
+        <input class="input" id="locationInput" name="location" list="areaList" placeholder="City, area or tap “Use Current Location”" autocomplete="off">
+        <datalist id="areaList"></datalist>
+      </div>
+      <div class="field">
+        <label for="accidentSelect">Accident Type</label>
+        <select class="input" id="accidentSelect" name="accident">
+          <option>Road Crash</option>
+          <option>Burn</option>
+          <option>Fall</option>
+          <option>Sports Injury</option>
+          <option>Cardiac Emergency</option>
+          <option>Breathing Emergency</option>
+          <option selected>Other Emergency</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit" id="btnFind">Find Nearby Hospitals</button>
+    </form>
+    <div class="quick-places">
+      <span class="muted">Popular places:</span>
+      <button type="button" class="chip-btn">Rajahmundry</button>
+      <button type="button" class="chip-btn">Kakinada</button>
+      <button type="button" class="chip-btn">Hyderabad</button>
+      <button type="button" class="chip-btn">Visakhapatnam</button>
+      <button type="button" class="chip-btn">Samalkot</button>
+      <button type="button" class="chip-btn">Pithapuram</button>
+      <button type="button" class="chip-btn">Amalapuram</button>
+    </div>
+    <p class="search-links">Not sure which type? <a href="{{ url_for('accidents') }}">Browse accident types →</a></p>
+  </section>
+</div>
+
+<!-- ================= FEATURES ================= -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-head">
+      <h2>Why CareFinder?</h2>
+      <p class="muted">Not just the nearest hospital – the most suitable one for the situation.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card"><div class="icon-bubble">📍</div><h3>Location aware</h3><p>Uses your browser location or a typed area to measure real distance to every hospital.</p></div>
+      <div class="card"><div class="icon-bubble">🩺</div><h3>Specialty match</h3><p>A road crash needs trauma and orthopedics, a cardiac case needs cardiology. We weigh each hospital's specialties.</p></div>
+      <div class="card"><div class="icon-bubble">🚨</div><h3>Emergency ready</h3><p>One tap shows nearby 24/7 emergency hospitals with call and directions buttons.</p></div>
+      <div class="card"><div class="icon-bubble">🛏️</div><h3>Availability</h3><p>See open status, available beds, ICU beds and blood availability at a glance.</p></div>
+      <div class="card"><div class="icon-bubble">⚖️</div><h3>Smart ranking</h3><p>Distance, specialty, emergency capability, availability and rating are combined into one match score.</p></div>
+      <div class="card"><div class="icon-bubble">🗺️</div><h3>Interactive map</h3><p>Leaflet + OpenStreetMap map with markers, popups and a quick-view card for each hospital.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="about">
+  <div class="container">
+    <div class="section-head">
+      <h2>About CareFinder</h2>
+      <p class="muted">CareFinder – Smart Nearby Hospital Finder is a diploma project that helps people compare nearby hospitals quickly during an emergency.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card"><div class="step-no">STEP 1</div><h3>Share your location</h3><p>Allow location access or type your area.</p></div>
+      <div class="card"><div class="step-no">STEP 2</div><h3>Choose accident type</h3><p>Road crash, burn, fall, sports injury, cardiac or breathing emergency.</p></div>
+      <div class="card"><div class="step-no">STEP 3</div><h3>Compare &amp; go</h3><p>See the best match, call the hospital or open directions.</p></div>
+    </div>
+    <div class="disclaimer" style="margin-top:28px"><b>⚠️</b><span>{{ disclaimer }} Hospital locations come from OpenStreetMap; ratings, bed counts and availability are demo values or not available, so always call to confirm.</span></div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="container contact-grid">
+    <div>
+      <h2 style="font-size:2rem;margin-bottom:10px">Contact</h2>
+      <p class="muted">Questions or feedback about the project? Send a message. (Demo form – messages are not stored.)</p>
+      <div class="card" style="margin-top:20px">
+        <p><b>📧 Email:</b> support@carefinder.example</p>
+        <p style="margin-top:8px"><b>🚨 Emergency helplines (India):</b> 112 · Ambulance 108</p>
+      </div>
+    </div>
+    <form class="card contact-form" id="contactForm">
+      <div class="field"><label>Your name</label><input class="input" required></div>
+      <div class="field"><label>Email</label><input class="input" type="email" required></div>
+      <div class="field"><label>Message</label><textarea class="input" rows="4" required></textarea></div>
+      <button class="btn btn-primary" type="submit">Send Message</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

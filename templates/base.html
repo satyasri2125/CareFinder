@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--
+  base.html = the shared layout. Every other page "extends" this file,
+  so the navbar, footer, toast area and disclaimer are written only once.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CareFinder – Smart Nearby Hospital Finder{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body data-page="{% block page %}home{% endblock %}" data-role="{{ role }}" data-user="{{ session.get('user_name', '') }}">
+
+<!-- ================= NAVBAR ================= -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="{{ url_for('index') }}">
+      <span class="logo-mark">✚</span>
+      <span>CareFinder<small>Smart Nearby Hospital Finder</small></span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="{{ url_for('index') }}" class="{{ 'active' if request.path == '/' }}">Home</a>
+      <a href="{{ url_for('hospitals') }}" class="{{ 'active' if request.path.startswith('/hospital') and not request.args.get('emergency') }}">Find Hospitals</a>
+      <a href="{{ url_for('hospitals', emergency=1) }}" class="nav-emergency">🚨 Emergency</a>
+      <a href="{{ url_for('index') }}#about">About</a>
+      <a href="{{ url_for('index') }}#contact">Contact</a>
+      {% if session.get('user_id') %}
+        {% if session.get('role') == 'staff' %}
+          <a href="{{ url_for('staff_dashboard') }}">🏥 Staff Dashboard</a>
+        {% else %}
+          <a href="{{ url_for('my_appointments') }}">📅 My Appointments</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Logout ({{ session['user_name'] }})</a>
+      {% elif session.get('guest') %}
+        <a href="{{ url_for('login') }}">Guest · Login</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-wrap">
+    {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="logo" href="{{ url_for('index') }}" style="color:#fff"><span class="logo-mark">✚</span> CareFinder</a>
+        <p style="margin-top:10px">Smart Nearby Hospital Finder. Find the right nearby hospital faster when every minute matters.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('accidents') }}">Accident Types</a>
+        <a href="{{ url_for('hospitals') }}">Find Hospitals</a>
+        <a href="{{ url_for('hospitals', emergency=1) }}">Emergency</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="{{ url_for('index') }}#about">About</a>
+        <a href="{{ url_for('index') }}#contact">Contact</a>
+        <a href="{{ url_for('logout') }}">Logout / Switch user</a>
+      </div>
+    </div>
+    <div class="disclaimer"><b>⚠️</b><span>{{ disclaimer }}</span></div>
+    <p class="copyright">© CareFinder – Smart Nearby Hospital Finder · Diploma project · Hospital locations come from OpenStreetMap or demo data; ratings, beds and availability may be missing – always call to confirm.</p>
+  </div>
+</footer>
+
+<div id="toasts" aria-live="polite"></div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% block scripts_extra %}{% endblock %}
+</body>
+</html>

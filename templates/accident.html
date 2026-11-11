@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Accident Type – CareFinder{% endblock %}
+{% block page %}accident{% endblock %}
+
+{% block content %}
+<section class="container">
+  <div class="page-head fade-in">
+    <span class="eyebrow">Step 2 of 3</span>
+    <h1 style="margin-top:14px">What type of emergency is it?</h1>
+    <p class="muted">Choose the closest match. We use it to prefer hospitals with the right specialties.</p>
+  </div>
+
+  <div class="accident-grid" id="accidentGrid">
+    {% for a in accidents if a.name != 'Other Emergency' %}
+    <button type="button" class="accident-card" data-accident="{{ a.name }}">
+      <span class="emoji">{{ a.icon }}</span>
+      <h3>{{ a.name }}</h3>
+      <p>{{ a.description }}</p>
+    </button>
+    {% endfor %}
+  </div>
+
+  <div class="continue-bar">
+    <button class="btn btn-primary" id="btnContinue" disabled>Continue to Find Hospitals →</button>
+    <p class="muted" style="margin-top:10px;font-size:.9rem" id="accidentHint">Select an accident type to continue.</p>
+    <p style="margin-top:6px"><a href="{{ url_for('hospitals', accident='Other Emergency') }}" style="color:var(--purple);font-weight:700">Other emergency? Skip →</a></p>
+  </div>
+
+  <div class="disclaimer" style="margin-bottom:60px"><b>⚠️</b><span>{{ disclaimer }}</span></div>
+</section>
+{% endblock %}

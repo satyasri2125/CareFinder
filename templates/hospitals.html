@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Nearby Hospitals – CareFinder{% endblock %}
+{% block page %}hospitals{% endblock %}
+{% block head_extra %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- ============ Location bar ============ -->
+<section class="find-top">
+  <div class="container">
+    <div class="loc-bar">
+      <input class="input" id="locInput" list="areaList" placeholder="Type a city or area, e.g. Ameerpet" autocomplete="off">
+      <datalist id="areaList"></datalist>
+      <button class="btn btn-primary" id="btnSetArea">Search Area</button>
+      <button class="btn btn-outline" id="btnGeo">📍 Use my location</button>
+    </div>
+    <div class="quick-places hospital-quick-places">
+      <span class="muted">Quick city search:</span>
+      <button type="button" class="chip-btn hospital-city-chip" data-city="Rajahmundry">Rajahmundry</button>
+      <button type="button" class="chip-btn hospital-city-chip" data-city="Kakinada">Kakinada</button>
+      <button type="button" class="chip-btn hospital-city-chip" data-city="Hyderabad">Hyderabad</button>
+      <button type="button" class="chip-btn hospital-city-chip" data-city="Visakhapatnam">Visakhapatnam</button>
+      <button type="button" class="chip-btn hospital-city-chip" data-city="Samalkot">Samalkot</button>
+      <button type="button" class="chip-btn hospital-city-chip" data-city="Pithapuram">Pithapuram</button>
+      <button type="button" class="chip-btn hospital-city-chip" data-city="Amalapuram">Amalapuram</button>
+    </div>
+    <div class="status-row" id="statusRow"></div>
+    <div class="emergency-banner" id="emergencyBanner" hidden>
+      <div>
+        <h3>🚨 Emergency mode</h3>
+        <p>Showing the nearest 24/7 emergency hospitals. In a life-threatening emergency call your local emergency number first.</p>
+      </div>
+      <div class="calls">
+        <a class="btn btn-sm" href="tel:112">📞 Call 112</a>
+        <a class="btn btn-sm" href="tel:108">🚑 Ambulance 108</a>
+      </div>
+    </div>
+    <div class="notice" id="farNotice" hidden>
+      <span id="farNoticeText"></span>
+      <button class="btn btn-sm btn-primary" id="btnDemoLoc">Use demo location (Hyderabad)</button>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="find-layout">
+
+    <!-- ============ Filter sidebar ============ -->
+    <aside class="sidebar" id="sidebar">
+      <h4>Accident Type</h4>
+      <select class="input" id="accidentSelect">
+        <option>Road Crash</option><option>Burn</option><option>Fall</option><option>Sports Injury</option>
+        <option>Cardiac Emergency</option><option>Breathing Emergency</option><option>Other Emergency</option>
+      </select>
+
+      <h4>Hospital Type</h4>
+      <label class="check"><input type="checkbox" data-filter="type" value="Government"> Government</label>
+      <label class="check"><input type="checkbox" data-filter="type" value="Private"> Private</label>
+
+      <h4>Availability</h4>
+      <label class="check"><input type="checkbox" data-filter="avail" value="open"> Open Now</label>
+      <label class="check"><input type="checkbox" data-filter="avail" value="247" id="chk247"> 24/7 Emergency</label>
+      <label class="check"><input type="checkbox" data-filter="avail" value="call"> Call to Confirm</label>
+
+      <h4>Sort By</h4>
+      <select class="input" id="sortSelect">
+        <option value="match">Best Match</option>
+        <option value="nearest">Nearest First</option>
+        <option value="rating">Highest Rated</option>
+      </select>
+
+      <h4>Specialty</h4>
+      <label class="check"><input type="checkbox" data-filter="spec" value="Emergency"> Emergency</label>
+      <label class="check"><input type="checkbox" data-filter="spec" value="Trauma"> Trauma</label>
+      <label class="check"><input type="checkbox" data-filter="spec" value="Burns"> Burns</label>
+      <label class="check"><input type="checkbox" data-filter="spec" value="Orthopedics"> Orthopedics</label>
+      <label class="check"><input type="checkbox" data-filter="spec" value="Cardiology"> Cardiology</label>
+      <label class="check"><input type="checkbox" data-filter="spec" value="Neurology"> Neurology</label>
+      <label class="check"><input type="checkbox" data-filter="spec" value="Neurosurgery"> Neurosurgery</label>
+      <p class="mini-note">Hospitals must match all ticked filters. Specialty filters only match hospitals that list specialties in the map data.</p>
+      <button class="btn btn-outline btn-block btn-sm" id="btnReset" style="margin-top:14px">Reset filters</button>
+    </aside>
+
+    <!-- ============ Results ============ -->
+    <section>
+      <button class="btn btn-outline btn-sm filter-toggle" id="btnFilters" style="margin-bottom:14px">☰ Filters</button>
+
+      <!-- Page 5: Best Hospital Match -->
+      <div class="best-section" id="bestSection" hidden>
+        <h2>Best Hospital Match</h2>
+        <p class="muted" style="font-size:.92rem">For: <b id="bestFor">Other Emergency</b></p>
+        <div class="best-grid" id="bestGrid"></div>
+        <p class="mini-note">The match score is an indicative comparison of distance, specialties, emergency capability, availability and rating. It is not a medical diagnosis or medical advice.</p>
+      </div>
+
+      <div class="results-head">
+        <h2 id="resultsTitle">Nearby hospitals</h2>
+        <span class="pill" id="resultsCount"></span>
+      </div>
+
+      <div class="split">
+        <!-- Left: map -->
+        <div class="map-wrap">
+          <div id="map"></div>
+          <div class="quick-view" id="quickView" hidden></div>
+        </div>
+        <!-- Right: cards -->
+        <div class="cards-col" id="cards">
+          <div class="loader-box"><div class="spinner"></div>Finding hospitals…</div>
+        </div>
+      </div>
+
+      <div class="disclaimer" style="margin-top:28px"><b>⚠️</b><span>{{ disclaimer }}</span></div>
+    </section>
+  </div>
+</div>
+{% endblock %}

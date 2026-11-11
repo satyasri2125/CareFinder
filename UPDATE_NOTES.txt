@@ -1,0 +1,27 @@
+CareFinder - Five City Hospital Directory Update
+
+This update adds the same local hospital directory to both patient nearby search
+and hospital staff registration for:
+- Samalkota
+- Hyderabad
+- Visakhapatnam
+- Pithapuram
+- Amalapuram
+
+The directory is merged with OpenStreetMap results. It does not replace live OSM
+results. The directory includes two named facilities per requested city.
+
+IMPORTANT MAP NOTE:
+The fallback coordinates in the local directory are city-centre coordinates,
+not verified hospital entrance coordinates. Directory map pins are therefore
+approximate. Check the hospital address and call before travelling or booking.
+OpenStreetMap entries retain their mapped coordinates.
+
+Run:
+  pip install -r requirements.txt
+  python app.py
+
+No MySQL schema change is required. Restart Flask after replacing the project.
+
+
+TiDB/Render update: successful registration and login events are now recorded in the shared login_history table. For an already-created TiDB database, run database/migrations/001_login_history.sql once. No user/account/appointment rows are dropped.

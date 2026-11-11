@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}My Appointments – CareFinder{% endblock %}
+{% block page %}appointments{% endblock %}
+
+{% block content %}
+<section class="container" style="padding:40px 0 70px">
+  <div class="page-head" style="text-align:left;padding:0 0 22px">
+    <h1>{{ icon('calendar', 30) }} My Appointments</h1>
+    <p class="muted">Your appointment requests. Hospital staff confirm them from their dashboard – please also call the hospital to be sure.</p>
+  </div>
+
+  {% if appointments %}
+  <div class="appt-list">
+    {% for a in appointments %}
+    <article class="appt-card fade-in">
+      <div class="appt-top"><h3>{{ a.hospital_name }}</h3><span class="pill {{ status_class.get(a.status, 'gray') }}">{{ a.status }}</span></div>
+      <div class="appt-meta">
+        <span>{{ icon('calendar', 16) }} {{ a.appt_date }}</span>
+        <span>{{ icon('clock', 16) }} {{ a.appt_time }}</span>
+        <span>{{ icon('stethoscope', 16) }} {{ a.department }}</span>
+        <span>{{ icon('user', 16) }} {{ a.patient_name }}</span>
+      </div>
+      <p class="muted">{{ a.reason or 'No reason given.' }}</p>
+      {% if a.status in ('Pending', 'Confirmed') %}
+      <form method="post" action="{{ url_for('cancel_appointment', appt_id=a.id) }}">
+        <button class="btn btn-outline btn-sm" type="submit">{{ icon('x', 16) }} Cancel appointment</button>
+      </form>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><div class="big">📅</div><h3>No appointments yet</h3>
+    <p class="muted">Open any hospital and use “Book Appointment”.</p>
+    <a class="btn btn-primary btn-sm" style="margin-top:14px" href="{{ url_for('hospitals') }}">Find Hospitals</a></div>
+  {% endif %}
+</section>
+{% endblock %}

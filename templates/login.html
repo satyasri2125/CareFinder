@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Login – CareFinder{% endblock %}
+{% block page %}login{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+  <div class="auth-card fade-in" id="authCard" data-role="{{ role }}" data-tab="{{ tab }}">
+    <div style="text-align:center;margin-bottom:16px">
+      <div class="logo-mark" style="margin:0 auto 10px;width:54px;height:54px;font-size:1.6rem">✚</div>
+      <h2>Welcome to CareFinder</h2>
+      <p class="muted" style="font-size:.9rem" id="roleHint">Find hospitals and book appointments.</p>
+    </div>
+
+    <!-- who are you? -->
+    <div class="role-switch" role="tablist">
+      <button type="button" data-role="patient">{{ icon('user', 18) }} Patient</button>
+      <button type="button" data-role="staff">{{ icon('stethoscope', 18) }} Hospital Staff</button>
+    </div>
+
+    <div class="tabs">
+      <button type="button" data-tab="login">{{ icon('login', 16) }} Login</button>
+      <button type="button" data-tab="register">{{ icon('user', 16) }} Register</button>
+    </div>
+
+    <!-- LOGIN -->
+    <form method="post" class="form-stack" id="formLogin">
+      <input type="hidden" name="action" value="login">
+      <input type="hidden" name="role" value="{{ role }}">
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <div class="field"><label>Email</label>
+        <div class="input-wrap">{{ icon('mail') }}<input class="input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required></div></div>
+      <div class="field"><label>Password</label>
+        <div class="input-wrap">{{ icon('lock') }}<input class="input" type="password" name="password" placeholder="Your password" autocomplete="current-password" required>
+          <button type="button" class="eye-btn" aria-label="Show password"><span class="eye-on">{{ icon('eye') }}</span><span class="eye-off" hidden>{{ icon('eye-off') }}</span></button></div></div>
+      <button class="btn btn-primary btn-block" type="submit">{{ icon('login', 18) }} Login</button>
+    </form>
+
+    <!-- REGISTER -->
+    <form method="post" class="form-stack" id="formRegister" hidden>
+      <input type="hidden" name="action" value="register">
+      <input type="hidden" name="role" value="{{ role }}">
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <div class="field"><label>Full name</label>
+        <div class="input-wrap">{{ icon('user') }}<input class="input" name="name" placeholder="Your full name" autocomplete="name" required></div></div>
+      <div class="field"><label>Email</label>
+        <div class="input-wrap">{{ icon('mail') }}<input class="input" type="email" name="email" placeholder="you@example.com" autocomplete="email" required></div></div>
+      <div class="field"><label>Phone</label>
+        <div class="input-wrap">{{ icon('phone') }}<input class="input" name="phone" inputmode="tel" placeholder="Mobile number"></div></div>
+      <div class="field staff-only" hidden><label>Find your hospital by city / town</label>
+        <div class="input-wrap">{{ icon('map-pin') }}
+          <input class="input" id="staffCitySearch" type="text" placeholder="Enter city (e.g. Visakhapatnam, Vijayawada, Hyderabad)" autocomplete="off" disabled>
+        </div>
+        <button class="btn btn-outline btn-sm" type="button" id="staffCitySearchBtn" disabled>Search hospitals in this city</button>
+        <label for="staffHospitalSelect">Choose your hospital</label>
+        <div class="input-wrap">{{ icon('hospital') }}
+          <select class="input" name="hospital_name" id="staffHospitalSelect" required disabled>
+            <option value="">Select your hospital</option>
+          </select>
+        </div>
+        <small class="muted" id="staffHospitalHint">Rajamahendravaram and Kakinada are preloaded. Enter any other Indian city to load its OpenStreetMap hospital list.</small>
+        <a class="muted" id="staffHospitalMapLink" href="{{ url_for('hospitals') }}" target="_blank" rel="noopener">View selected hospital on map</a>
+      </div>
+      <div class="field staff-only" hidden><label>Staff access code</label>
+        <div class="input-wrap">{{ icon('key') }}<input class="input" type="password" name="staff_code" placeholder="Given by your hospital admin" disabled>
+          <button type="button" class="eye-btn" aria-label="Show code"><span class="eye-on">{{ icon('eye') }}</span><span class="eye-off" hidden>{{ icon('eye-off') }}</span></button></div></div>
+      <div class="field"><label>Password (min 6 characters)</label>
+        <div class="input-wrap">{{ icon('lock') }}<input class="input" type="password" name="password" minlength="6" placeholder="Create a password" autocomplete="new-password" required>
+          <button type="button" class="eye-btn" aria-label="Show password"><span class="eye-on">{{ icon('eye') }}</span><span class="eye-off" hidden>{{ icon('eye-off') }}</span></button></div></div>
+      <button class="btn btn-primary btn-block" type="submit">{{ icon('check', 18) }} Create account</button>
+    </form>
+
+    <p class="muted" style="text-align:center;margin:16px 0 8px;font-size:.85rem">— or —</p>
+    <a class="btn btn-outline btn-block" href="{{ url_for('guest') }}">Continue as Guest →</a>
+  </div>
+</section>
+{% endblock %}

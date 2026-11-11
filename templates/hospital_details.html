@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ hospital_name }} – CareFinder{% endblock %}
+{% block page %}details{% endblock %}
+{% block head_extra %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container" data-hospital-id="{{ hospital_id }}" id="detailPage">
+  <a class="back-link" href="{{ url_for('hospitals') }}" id="backLink">← Back to nearby hospitals</a>
+  <!-- script.js fills this box using /api/hospital/<id> -->
+  <div id="detailRoot">
+    <div class="loader-box"><div class="spinner"></div>Loading hospital details…</div>
+  </div>
+  <div class="disclaimer" style="margin:28px 0 60px"><b>⚠️</b><span>{{ disclaimer }} Hospital information comes from OpenStreetMap or demo data and may be incomplete or outdated – always call the hospital to confirm.</span></div>
+</div>
+{% endblock %}
